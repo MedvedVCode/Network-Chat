@@ -19,7 +19,7 @@ public class Main {
     public static final String SERVER_NAME = "Server";
 
     public static void main(String[] args) throws IOException {
-        List<ServerThread> serverList = new LinkedList<>();
+        List<Server> serverList = new LinkedList<>();
         String message;
         ServerSocket serverSocket = new ServerSocket(PORT_SERVER);
         if (setSettingsToTxt(PORT_SERVER)) {
@@ -32,7 +32,7 @@ public class Main {
         System.out.println(message);
         while (true) {
             Socket clientSocket = serverSocket.accept();
-            serverList.add(new ServerThread(clientSocket, serverList, SERVER_NAME));
+            serverList.add(new Server(clientSocket, serverList, SERVER_NAME));
         }
     }
 

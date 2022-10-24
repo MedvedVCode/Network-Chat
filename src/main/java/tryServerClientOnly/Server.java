@@ -3,9 +3,11 @@ package tryServerClientOnly;
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.LinkedList;
+import java.util.List;
 
 public class Server {
-
+    private static List<Thread> serverList = new LinkedList<>();
     public static void main(String[] args) throws IOException {
         ServerSocket server = new ServerSocket(9999);
         Socket client = server.accept();

@@ -27,19 +27,41 @@ public class Client {
         } catch (IOException e) {
             e.getMessage();
         }
+        Thread readMsg = new Thread(() -> {
+            String response;
+            try {
+                while (true) {
+                    response = in.readLine();
+                    System.out.println(response);
+                }
+            } catch (IOException e) {
+                e.getMessage();
+            }
+        });
 
+        Thread writeMsg = new Thread(() -> {
+            String message;
+            try{
+                while(true) {
+                    message = consoleReader.readLine();
+                    out.write(message + '\n');
+                    out.flush();
+                }
+            } catch(IOException e){
+                e.getMessage();
+            }
+        });
 
+        readMsg.start();
+        writeMsg.start();
     }
 
     private void setNickname() {
         System.out.println("Введите ваш имя в чате: ");
         try {
             nickname = consoleReader.readLine();
-            System.out.println("Прошли readLine");
             out.write(nickname + '\n');
-            System.out.println("Прошли write");
             out.flush();
-            System.out.println("Прошли flush");
         } catch (IOException e) {
             e.getMessage();
         }
