@@ -47,6 +47,7 @@
 ## Пример общения клиентов в чате
 `client01`
 ![Схема работы программы](src/main/resources/client1.png)
+
 `client02`
 ![Схема работы программы](src/main/resources/client2.png)
 
