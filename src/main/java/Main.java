@@ -14,22 +14,21 @@ public class Main {
             File.separator + "resources" +
             File.separator + "settings.txt";
 
-    public static final Logger LOGGER = Logger.getInstance();
+    public static Logger logger = Logger.getInstance();
 
     public static final String SERVER_NAME = "Server";
 
     public static void main(String[] args) throws IOException {
         List<Server> serverList = new LinkedList<>();
-        String message;
         ServerSocket serverSocket = new ServerSocket(PORT_SERVER);
         if (setSettingsToTxt(PORT_SERVER)) {
-            LOGGER.log(new Date(), SERVER_NAME, "Собрали settings.txt");
+            logger.log(new Date(), SERVER_NAME, "Собрали settings.txt");
         } else {
-            LOGGER.log(new Date(), SERVER_NAME, "Неудача при создании settings.txt");
+            logger.log(new Date(), SERVER_NAME, "Неудача при создании settings.txt");
             serverSocket.close();
         }
-        message = LOGGER.log(new Date(), SERVER_NAME, "Сервер запущен и ждет клиентов!");
-        System.out.println(message);
+        logger.log(new Date(), SERVER_NAME, "Сервер запущен!");
+        System.out.println(String.format("%s: Сервер запущен и ждет клиентов!", SERVER_NAME));
         while (true) {
             Socket clientSocket = serverSocket.accept();
             serverList.add(new Server(clientSocket, serverList, SERVER_NAME));

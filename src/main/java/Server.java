@@ -10,7 +10,7 @@ public class Server extends Thread {
     private BufferedWriter out;
     private String clientName;
     private String serverName;
-    private static final Logger LOGGER = Logger.getInstance();
+    public Logger logger = Logger.getInstance();
 
     public Server(Socket clientSocket, List<Server> serverList, String serverName) throws IOException {
         this.clientSocket = clientSocket;
@@ -27,15 +27,15 @@ public class Server extends Thread {
         try {
             //получаем имя клиента
             clientName = in.readLine();
-            response = LOGGER.log(new Date(), serverName, "К нам присоединился " + clientName);
-            sendToAll(response);
-            response = LOGGER.log(new Date(), serverName, "Привет, " + clientName);
-            send(response);
+            logger.log(new Date(), serverName, "Новый участник " + clientName + "!");
+            sendToAll(String.format("%s: К нам присоединился %s!", serverName, clientName));
+            send(String.format("%s: Привет, %s!", serverName, clientName));
             //ждем сообщения и переправляем всем
             while (true) {
                 response = in.readLine();
                 if (response.equals("/exit")) {
-                    sendToAll(LOGGER.log(new Date(), serverName, clientName + " уходит от нас"));
+                    logger.log(new Date(), serverName, clientName + " ушел");
+                    sendToAll(String.format("%s: %s уходит от нас", serverName, clientName));
                     downClient();
                     break;
                 }
@@ -47,6 +47,7 @@ public class Server extends Thread {
     }
 
     private void downClient() {
+        // закрываем связь сервер-клиент
         if (!clientSocket.isClosed()) {
             try {
                 in.close();
@@ -55,9 +56,10 @@ public class Server extends Thread {
             } catch (IOException e) {
                 e.getMessage();
             }
-            serverList.remove(this);
-            this.interrupt();
         }
+        // удаляем из списка серверов
+        serverList.remove(this);
+        this.interrupt();
     }
 
     private void send(String message) {
@@ -82,6 +84,4 @@ public class Server extends Thread {
             e.getMessage();
         }
     }
-
-
 }

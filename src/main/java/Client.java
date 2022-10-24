@@ -1,5 +1,6 @@
 import java.io.*;
 import java.net.Socket;
+import java.util.Date;
 import java.util.Scanner;
 
 public class Client {
@@ -12,6 +13,7 @@ public class Client {
     private String nickname;
     private Thread readMsg;
     private Thread writeMsg;
+    public Logger logger = Logger.getInstance();
 
     public Client(String settingsPath) {
         setSettingsFromTxt(settingsPath);
@@ -25,16 +27,18 @@ public class Client {
             in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             out = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
             setNickname();
-            System.out.println(in.readLine());
         } catch (IOException e) {
             e.getMessage();
         }
         readMsg = new Thread(() -> {
             String response;
             try {
+
                 while (true) {
                     response = in.readLine();
-                    System.out.println(response);
+                    if (response != null) {
+                        System.out.println(response);
+                    }
                 }
             } catch (IOException e) {
                 e.getMessage();
@@ -46,18 +50,20 @@ public class Client {
             try {
                 while (true) {
                     message = consoleReader.readLine();
-                    out.write(message + '\n');
-                    out.flush();
                     if (message.equalsIgnoreCase("/exit")) {
+                        out.write(message + '\n');
+                        out.flush();
                         shutdownClient();
                         break;
                     }
+                    logger.log(new Date(), nickname, message);
+                    out.write(String.format("%s: %s\n", nickname, message));
+                    out.flush();
                 }
             } catch (IOException e) {
                 e.getMessage();
             }
         });
-
         readMsg.start();
         writeMsg.start();
     }
@@ -69,8 +75,7 @@ public class Client {
             in.close();
             out.close();
             socket.close();
-        }
-        catch (IOException e){
+        } catch (IOException e) {
             e.getMessage();
         }
     }
