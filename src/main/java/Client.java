@@ -10,6 +10,8 @@ public class Client {
     private int port;
     private String host;
     private String nickname;
+    private Thread readMsg;
+    private Thread writeMsg;
 
     public Client(String settingsPath) {
         setSettingsFromTxt(settingsPath);
@@ -27,7 +29,7 @@ public class Client {
         } catch (IOException e) {
             e.getMessage();
         }
-        Thread readMsg = new Thread(() -> {
+        readMsg = new Thread(() -> {
             String response;
             try {
                 while (true) {
@@ -39,21 +41,38 @@ public class Client {
             }
         });
 
-        Thread writeMsg = new Thread(() -> {
+        writeMsg = new Thread(() -> {
             String message;
-            try{
-                while(true) {
+            try {
+                while (true) {
                     message = consoleReader.readLine();
                     out.write(message + '\n');
                     out.flush();
+                    if (message.equalsIgnoreCase("/exit")) {
+                        shutdownClient();
+                        break;
+                    }
                 }
-            } catch(IOException e){
+            } catch (IOException e) {
                 e.getMessage();
             }
         });
 
         readMsg.start();
         writeMsg.start();
+    }
+
+    private void shutdownClient() {
+        readMsg.interrupt();
+        writeMsg.interrupt();
+        try {
+            in.close();
+            out.close();
+            socket.close();
+        }
+        catch (IOException e){
+            e.getMessage();
+        }
     }
 
     private void setNickname() {

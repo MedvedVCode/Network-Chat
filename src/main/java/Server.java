@@ -35,11 +35,11 @@ public class Server extends Thread {
             while (true) {
                 response = in.readLine();
                 if (response.equals("/exit")) {
-                    sendToAll(LOGGER.log(new Date(), serverName, clientName + "уходит от нас"));
+                    sendToAll(LOGGER.log(new Date(), serverName, clientName + " уходит от нас"));
                     downClient();
                     break;
                 }
-                this.sendToAll(response);
+                sendToAll(response);
             }
         } catch (IOException e) {
             e.getMessage();
@@ -52,11 +52,11 @@ public class Server extends Thread {
                 in.close();
                 out.close();
                 clientSocket.close();
-                serverList.remove(this);
-                this.interrupt();
             } catch (IOException e) {
                 e.getMessage();
             }
+            serverList.remove(this);
+            this.interrupt();
         }
     }
 
